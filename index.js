@@ -22,6 +22,7 @@ async function run() {
   try {
     // database collection 
       const ecommerceProductCollection = client.db("ECommerceProducts").collection("products")
+      const userCardProduct = client.db("UserProducts").collection("products")
 
 
     // start here server api 
@@ -32,6 +33,11 @@ async function run() {
     app.get('/product/:id', async(req,res)=>{
       res.send(await ecommerceProductCollection.findOne({_id: new ObjectId(req.params.id)}))
 
+    })
+
+    app.post('/product', async(req, res)=>{
+      await userCardProduct.insertOne(req.body)
+      res.send({cardProduct : true})
     })
     
     await client.db("admin").command({ ping: 1 });
