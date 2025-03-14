@@ -26,6 +26,8 @@ async function run() {
 
 
     // start here server api 
+
+    // this api start here for all products 
     app.get("/products", async(req, res)=>{
         res.send(await ecommerceProductCollection.find().toArray())
     })
@@ -35,9 +37,14 @@ async function run() {
 
     })
 
+    // this api start here user choges product and resive for user card
     app.post('/product', async(req, res)=>{
       await userCardProduct.insertOne(req.body)
-      res.send({cardProduct : true})
+      res.send({success : true})
+    })
+
+    app.get('/card-product/?', async(req, res)=>{
+      res.send(await userCardProduct.find({email: req.query.email}).toArray())
     })
     
     await client.db("admin").command({ ping: 1 });
