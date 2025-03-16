@@ -48,6 +48,7 @@ async function run() {
         email: userData.email,
         title : userData.title,
         price : userData.price,
+        stock: userData.stock,
         totalPrice : userData.totalPrice,
         thumbnail : userData.thumbnail,
         quantity : userData.quantity,
@@ -67,7 +68,7 @@ async function run() {
 
     })
 
-    
+
     
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
