@@ -22,7 +22,7 @@ async function run() {
   try {
     // database collection 
       const ecommerceProductCollection = client.db("ECommerceProducts").collection("products")
-      const userCardProduct = client.db("UserProducts").collection("products")
+      const userCardProductCollection = client.db("UserProducts").collection("products")
 
 
     // start here server api 
@@ -37,15 +37,37 @@ async function run() {
 
     })
 
-    // this api start here user choges product and resive for user card
-    app.post('/product', async(req, res)=>{
-      await userCardProduct.insertOne(req.body)
+
+    // api start here for card 
+    app.put('/product', async(req, res)=>{
+      const userData = req.body
+      const productId = {productId : userData.productId}
+      const options = {upsert : true}
+      const cardProduct = {$set:{
+        productId : userData.productId,
+        email: userData.email,
+        title : userData.title,
+        price : userData.price,
+        totalPrice : userData.totalPrice,
+        thumbnail : userData.thumbnail,
+        quantity : userData.quantity,
+      }}
+
+      await userCardProductCollection.updateOne(productId, cardProduct, options)
+
       res.send({success : true})
     })
 
     app.get('/card-product/?', async(req, res)=>{
-      res.send(await userCardProduct.find({email: req.query.email}).toArray())
+      res.send(await userCardProductCollection.find({email: req.query.email}).toArray())
     })
+
+    app.delete('/product/:id', async(req,res)=>{
+      res.send(await userCardProductCollection.deleteOne({productId: req.params.id}))
+
+    })
+
+    
     
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
