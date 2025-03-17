@@ -59,8 +59,8 @@ async function run() {
       res.send({success : true})
     })
 
-    app.get('/card-product/?', async(req, res)=>{
-      res.send(await userCardProductCollection.find({email: req.query.email}).toArray())
+    app.get('/card-product?', async(req, res)=>{
+      res.send(await userCardProductCollection.find({email: req.query?.email}).toArray())
     })
 
     app.delete('/product/:id', async(req,res)=>{
