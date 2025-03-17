@@ -23,6 +23,7 @@ async function run() {
     // database collection 
       const ecommerceProductCollection = client.db("ECommerceProducts").collection("products")
       const userCardProductCollection = client.db("UserProducts").collection("products")
+      const userOrderProductCollection = client.db("UserOrderProducts").collection("products")
       const bangladeshDivisionCollection = client.db("BangladeshDivision").collection("division")
       const bangladeshDistrictsCollection = client.db("BangladeshDivision").collection("districts")
       const bangladeshUpazilasCollection = client.db("BangladeshDivision").collection("upazilas")
@@ -69,6 +70,20 @@ async function run() {
     app.delete('/product/:id', async(req,res)=>{
       res.send(await userCardProductCollection.deleteOne({productId: req.params.id}))
 
+    })
+
+
+    // start here api for order 
+    app.put('/orderProducts', async(req,res)=>{
+      const orderDetails = req.body
+      const productId = {productId : orderDetails.order.productId}
+      const options = {upsert : true}
+      const userOrder = {$set:{
+        user : orderDetails.user,
+        order : orderDetails.order
+      }}
+      await userOrderProductCollection.updateOne(productId, userOrder, options)
+      res.send({orderSuccess : true})
     })
 
 
