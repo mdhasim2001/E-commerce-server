@@ -23,6 +23,9 @@ async function run() {
     // database collection 
       const ecommerceProductCollection = client.db("ECommerceProducts").collection("products")
       const userCardProductCollection = client.db("UserProducts").collection("products")
+      const bangladeshDivisionCollection = client.db("BangladeshDivision").collection("division")
+      const bangladeshDistrictsCollection = client.db("BangladeshDivision").collection("districts")
+      const bangladeshUpazilasCollection = client.db("BangladeshDivision").collection("upazilas")
 
 
     // start here server api 
@@ -66,6 +69,19 @@ async function run() {
     app.delete('/product/:id', async(req,res)=>{
       res.send(await userCardProductCollection.deleteOne({productId: req.params.id}))
 
+    })
+
+
+    // start here division api 
+    app.get('/division', async(req, res)=>{
+      res.send(await bangladeshDivisionCollection.find().toArray())
+    })
+    app.get('/districts?', async(req, res)=>{
+      // const division = req.query.division;
+      res.send(await bangladeshDistrictsCollection.find({division_id: req.query.divisionId}).toArray())
+    })
+    app.get('/upazilas', async(req, res)=>{
+      res.send(await bangladeshUpazilasCollection.find({district_id: req.query.districtsId}).toArray())
     })
 
 
