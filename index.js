@@ -82,8 +82,13 @@ async function run() {
         user : orderDetails.user,
         order : orderDetails.order
       }}
+      
       await userOrderProductCollection.updateOne(productId, userOrder, options)
       res.send({orderSuccess : true})
+    })
+
+    app.get('/orderProducts?', async(req, res)=>{
+      res.send(await userOrderProductCollection.find({user: req.query?.email}).toArray())
     })
 
 
