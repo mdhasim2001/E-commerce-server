@@ -91,6 +91,11 @@ async function run() {
       res.send(await userOrderProductCollection.find({user: req.query?.email}).toArray())
     })
 
+    app.delete('/orderProducts/:id', async(req, res)=>{
+      res.send(await userOrderProductCollection.deleteOne({_id: new ObjectId(req.params.id) }))
+
+    })
+
 
     // start here division api 
     app.get('/division', async(req, res)=>{
