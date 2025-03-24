@@ -21,15 +21,42 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // database collection 
+      const ecommerceUserCollection = client.db("ECommerceUser").collection("user")
       const ecommerceProductCollection = client.db("ECommerceProducts").collection("products")
       const userCardProductCollection = client.db("UserProducts").collection("products")
       const userOrderProductCollection = client.db("UserOrderProducts").collection("products")
+      const userPurchaseProductCollection = client.db("UserPurchaseProducts").collection("products")
+
       const bangladeshDivisionCollection = client.db("BangladeshDivision").collection("division")
       const bangladeshDistrictsCollection = client.db("BangladeshDivision").collection("districts")
       const bangladeshUpazilasCollection = client.db("BangladeshDivision").collection("upazilas")
 
 
     // start here server api 
+
+    // user callect api 
+    app.get('/user?', async(req, res)=>{
+      res.send(await ecommerceUserCollection.findOne({email: req.query?.email}))
+    })
+
+    app.post('/users', async(req, res)=>{
+      const user = req.body.userAddress
+      const email = {email : user.user}
+      const userDetails = {$set:{
+        email: user.user,
+        name : user.name,
+        number : user.number,
+        address : {
+          region : user.region,
+          city : user.city,
+          zone : user.zone,
+          home : user.address
+        }
+      }}
+      await ecommerceUserCollection.updateOne(email, userDetails)
+
+      res.send({success : true})
+    })
 
     // this api start here for all products 
     app.get("/products", async(req, res)=>{
