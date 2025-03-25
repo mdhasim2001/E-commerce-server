@@ -41,21 +41,24 @@ async function run() {
 
     app.post('/users', async(req, res)=>{
       const user = req.body.userAddress
-      const email = {email : user.user}
-      const userDetails = {$set:{
+      const userDetails = {
         email: user.user,
-        name : user.name,
-        number : user.number,
         address : {
+          name : user.name,
+          number : user.number,
           region : user.region,
           city : user.city,
           zone : user.zone,
           home : user.address
         }
-      }}
-      await ecommerceUserCollection.updateOne(email, userDetails)
+      }
+      await ecommerceUserCollection.insertOne(userDetails)
 
       res.send({success : true})
+    })
+
+    app.post('/confrom-order', async(req, res)=>{
+      console.log(req.body)
     })
 
     // this api start here for all products 
@@ -72,30 +75,23 @@ async function run() {
     // api start here for card 
     app.put('/product', async(req, res)=>{
       const userData = req.body
-      const productId = {productId : userData.productId}
+      const productId = {_id: (userData.product._id)}
       const options = {upsert : true}
       const cardProduct = {$set:{
-        productId : userData.productId,
-        email: userData.email,
-        title : userData.title,
-        price : userData.price,
-        stock: userData.stock,
-        totalPrice : userData.totalPrice,
-        thumbnail : userData.thumbnail,
-        quantity : userData.quantity,
+            user : userData.user,
+            product : userData.product
       }}
-
       await userCardProductCollection.updateOne(productId, cardProduct, options)
 
       res.send({success : true})
     })
 
     app.get('/card-product?', async(req, res)=>{
-      res.send(await userCardProductCollection.find({email: req.query?.email}).toArray())
+      res.send(await userCardProductCollection.find({user: req.query?.email}).toArray())
     })
 
     app.delete('/product/:id', async(req,res)=>{
-      res.send(await userCardProductCollection.deleteOne({productId: req.params.id}))
+      res.send(await userCardProductCollection.deleteOne({_id: req.params.id}))
 
     })
 
@@ -103,11 +99,15 @@ async function run() {
     // start here api for order 
     app.put('/orderProducts', async(req,res)=>{
       const orderDetails = req.body
-      const productId = {productId : orderDetails.order.productId}
+      const productId = {_id : orderDetails.order._id}
       const options = {upsert : true}
       const userOrder = {$set:{
         user : orderDetails.user,
-        order : orderDetails.order
+        order : {
+          quantity : orderDetails.quantity,
+          totalPrice : orderDetails.subTotal
+        },
+        product : orderDetails.order
       }}
       
       await userOrderProductCollection.updateOne(productId, userOrder, options)
