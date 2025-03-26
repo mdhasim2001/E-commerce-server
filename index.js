@@ -57,9 +57,6 @@ async function run() {
       res.send({success : true})
     })
 
-    app.post('/confrom-order', async(req, res)=>{
-      console.log(req.body)
-    })
 
     // this api start here for all products 
     app.get("/products", async(req, res)=>{
@@ -99,15 +96,15 @@ async function run() {
     // start here api for order 
     app.put('/orderProducts', async(req,res)=>{
       const orderDetails = req.body
-      const productId = {_id : orderDetails.order._id}
+      const productId = {_id : orderDetails.product._id}
       const options = {upsert : true}
       const userOrder = {$set:{
         user : orderDetails.user,
         order : {
-          quantity : orderDetails.quantity,
-          totalPrice : orderDetails.subTotal
+          quantity : orderDetails.order.quantity,
+          totalPrice : orderDetails.order.totalPrice
         },
-        product : orderDetails.order
+        product : orderDetails.product
       }}
       
       await userOrderProductCollection.updateOne(productId, userOrder, options)
@@ -119,8 +116,19 @@ async function run() {
     })
 
     app.delete('/orderProducts/:id', async(req, res)=>{
-      res.send(await userOrderProductCollection.deleteOne({_id: new ObjectId(req.params.id) }))
+      res.send(await userOrderProductCollection.deleteOne({_id: (req.params.id) }))
 
+    })
+
+
+    // user confrom order collection api 
+    app.post('/confrom-order', async(req, res)=>{
+      await userPurchaseProductCollection.insertOne(req.body)
+      res.send({success : true})
+    })
+
+    app.get('/confrom-order?', async(req, res)=>{
+      res.send(await userPurchaseProductCollection.find({user : req.query.email}).toArray())
     })
 
 
